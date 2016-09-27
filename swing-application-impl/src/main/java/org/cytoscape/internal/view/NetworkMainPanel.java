@@ -10,6 +10,7 @@ import static org.cytoscape.util.swing.IconManager.ICON_COG;
 import static org.cytoscape.util.swing.IconManager.ICON_PLUS;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -116,7 +117,14 @@ public class NetworkMainPanel extends JPanel implements CytoPanelComponent2 {
 	private static final String ID = "org.cytoscape.Network";
 	
 	private static final Dimension PANEL_SIZE = new Dimension(400, 700);
+	private static final Dimension SEARCH_PANEL_SIZE = new Dimension(400, 100);
 
+	// Base component for current NetworkPanel
+	private JPanel networkPanel;
+	
+	// Search component panel
+	private JPanel searchPanel;
+	
 	private JScrollPane rootNetworkScroll;
 	private RootNetworkListPanel rootNetworkListPanel;
 	private JPanel networkHeader;
@@ -178,18 +186,31 @@ public class NetworkMainPanel extends JPanel implements CytoPanelComponent2 {
 	}
 	
 	private void init() {
-		setPreferredSize(PANEL_SIZE);
-		setSize(PANEL_SIZE);
-		setOpaque(!LookAndFeelUtil.isAquaLAF()); // Transparent if Aqua
+		
+		// Keep current network panel as-is...
+		this.networkPanel = new JPanel();
+		networkPanel.setPreferredSize(PANEL_SIZE);
+		networkPanel.setSize(PANEL_SIZE);
+		networkPanel.setOpaque(!LookAndFeelUtil.isAquaLAF()); // Transparent if Aqua
 
-		setLayout(new BorderLayout());
-		add(getNetworkHeader(), BorderLayout.NORTH);
-		add(getRootNetworkScroll(), BorderLayout.CENTER);
-		add(getNetworkToolBar(), BorderLayout.SOUTH);
+		networkPanel.setLayout(new BorderLayout());
+		networkPanel.add(getNetworkHeader(), BorderLayout.NORTH);
+		networkPanel.add(getRootNetworkScroll(), BorderLayout.CENTER);
+		networkPanel.add(getNetworkToolBar(), BorderLayout.SOUTH);
 		
 		updateNetworkHeader();
 		
 		getNetworkToolBar().setVisible(isShowNetworkToolBar());
+		
+		// New: search panel
+		this.searchPanel = new JPanel();
+		searchPanel.setLayout(new BorderLayout());
+		searchPanel.setOpaque(!LookAndFeelUtil.isAquaLAF());
+		
+		// Add these two panels to base panel
+		this.setLayout(new BorderLayout());
+		this.add(searchPanel, BorderLayout.NORTH);
+		this.add(networkPanel, BorderLayout.CENTER);
 	}
 	
 	JScrollPane getRootNetworkScroll() {
@@ -1387,5 +1408,13 @@ public class NetworkMainPanel extends JPanel implements CytoPanelComponent2 {
 				deselectAll();
 			}
 		}
+	}
+	
+	protected final void injectSearchPanel(final JPanel panel) {
+		this.searchPanel.removeAll();
+		if(panel != null) {
+			this.searchPanel.add(panel, BorderLayout.CENTER);
+		}
+		this.repaint();
 	}
 }

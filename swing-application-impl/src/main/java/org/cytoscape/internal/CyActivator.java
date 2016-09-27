@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -81,6 +82,7 @@ import org.cytoscape.internal.view.NetworkMediator;
 import org.cytoscape.internal.view.NetworkSelectionMediator;
 import org.cytoscape.internal.view.NetworkViewMainPanel;
 import org.cytoscape.internal.view.NetworkViewMediator;
+import org.cytoscape.internal.view.SearchPanelListener;
 import org.cytoscape.internal.view.ToolBarEnableUpdater;
 import org.cytoscape.internal.view.help.ArrangeTaskFactory;
 import org.cytoscape.internal.view.help.HelpAboutTaskFactory;
@@ -402,6 +404,10 @@ public class CyActivator extends AbstractCyActivator {
 		}
 		
 		registerService(bc, fullScreenAction, CyAction.class, new Properties());
+		
+		// Inject component dynamically to the NetworkPanel
+		final SearchPanelListener searchPanelListener = new SearchPanelListener(netMainPanel);
+		registerServiceListener(bc, searchPanelListener, "registerPanel", "unregisterPanel", JPanel.class);
 	}
 
 	private void initComponents(final BundleContext bc, final CyServiceRegistrar serviceRegistrar) {
